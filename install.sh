@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Academic Research Suite — Installer para pi-coding-agent
+# Academic Research Suite — Multi-agent installer
 # =============================================================================
 #
-# Uso:
+# Compatible con: pi-coding-agent · Claude Code (Claude) · OpenAI Codex CLI
+#
+# Uso local (repo clonado):
 #   ./install.sh                  # Modo interactivo (menú)
 #   ./install.sh --all            # Instalar todas las skills
 #   ./install.sh <skill-name>     # Instalar una skill específica
@@ -13,16 +15,61 @@
 #   ./install.sh --status         # Ver estado de instalación
 #   ./install.sh --help           # Mostrar ayuda
 #
-# Destino por defecto: ~/.pi/agent/skills/
-# Cambiar destino: PI_SKILLS_DIR=/ruta ./install.sh --all
+# Uso remoto (one-liner desde cualquier máquina):
+#   curl -sSL https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.sh | bash
+#   curl -sSL https://raw... | bash -s -- --all --agent codex
+#   curl -sSL https://raw... | bash -s -- --all --agent all
+#
+# Multi-agente:     ./install.sh --all --agent codex
+#                   ./install.sh --all --agent claude
+#                   ./install.sh --all --agent all
 # =============================================================================
 
 set -euo pipefail
+
+# ─── Bootstrap remoto: si no hay SKILL.md local, clonar el repo ─────────────
+
+# Detectar si estamos en un repo local con skills o si es ejecución remota (curl|bash)
+_is_local_repo() {
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]:-}")" 2>/dev/null && pwd)" || return 1
+    # Buscar al menos un SKILL.md en subdirectorios hermanos
+    local skill_count
+    skill_count=$(find "$script_dir" -maxdepth 2 -name SKILL.md -type f 2>/dev/null | wc -l)
+    [ "$skill_count" -gt 0 ]
+}
+
+if ! _is_local_repo; then
+    # Ejecución remota (curl | bash): clonar el repo automáticamente
+    REPO_URL="${REPO_URL:-https://github.com/alexandralacruz/academic-research-suite.git}"
+    TMP_DIR="$(mktemp -d /tmp/academic-research-suite.XXXXXX)"
+    trap 'rm -rf "$TMP_DIR"' EXIT
+
+    echo "→ Clonando Academic Research Suite..."
+    if command -v git &>/dev/null; then
+        git clone --depth 1 "$REPO_URL" "$TMP_DIR" 2>&1 | tail -1
+    else
+        echo "Error: git no encontrado. Instala git o clona el repo manualmente:"
+        echo "  git clone $REPO_URL && cd academic-research-suite && ./install.sh --all --agent codex"
+        exit 1
+    fi
+
+    cd "$TMP_DIR"
+    exec bash "$TMP_DIR/install.sh" "$@"
+    exit 0
+fi
 
 # ─── Configuración ───────────────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEST_DIR="${PI_SKILLS_DIR:-$HOME/.pi/agent/skills}"
+
+# Rutas por agente
+AGENT_SKILLS_DIRS=(
+    "pi:$HOME/.pi/agent/skills"
+    "claude:$HOME/.claude/skills"
+    "codex:$HOME/.codex/skills"
+)
 
 # ─── Colores ─────────────────────────────────────────────────────────────────
 
@@ -159,11 +206,29 @@ cmd_status() {
 }
 
 cmd_install_all() {
+    local agent="${1:-}"
+
+    if [ -n "$agent" ] && [ "$agent" != "all" ]; then
+        local agent_dir; agent_dir=$(get_agent_dir "$agent")
+        if [ -z "$agent_dir" ]; then
+            echo "${RED}Error:${RESET} Agente '${BOLD}$agent${RESET}' no reconocido."
+            echo "Agentes válidos: pi, claude, codex, all"
+            exit 1
+        fi
+        DEST_DIR="$agent_dir"
+    fi
+
+    if [ "$agent" = "all" ]; then
+        cmd_install_all_agents
+        return
+    fi
+
     echo
     echo "${BOLD}${BLUE}Instalando Academic Research Suite (todas las skills)${RESET}"
     echo "${BLUE}──────────────────────────────────────────────────────${RESET}"
     echo
     echo "  Destino: ${CYAN}$DEST_DIR${RESET}"
+    [ -n "$agent" ] && echo "  Agente:   ${CYAN}$agent${RESET}"
     echo
 
     local count=0 errors=0
@@ -178,7 +243,37 @@ cmd_install_all() {
     echo
     echo "  ${BOLD}Resultado:${RESET} ${GREEN}$count instaladas${RESET}$([ $errors -gt 0 ] && echo ", ${RED}$errors errores${RESET}")"
     echo
-    echo "  ${BOLD}Nota:${RESET} Reinicia pi o usa ${CYAN}/skill:<nombre>${RESET} para cargar las skills."
+    case "${agent:-pi}" in
+        pi)     echo "  ${BOLD}Nota:${RESET} Reinicia pi o usa ${CYAN}/skill:<nombre>${RESET} para cargar las skills." ;;
+        claude) echo "  ${BOLD}Nota:${RESET} En Claude Code usa ${CYAN}/skill:<nombre>${RESET} para invocar." ;;
+        codex)  echo "  ${BOLD}Nota:${RESET} En Codex usa ${CYAN}/skill:<nombre>${RESET} para invocar." ;;
+    esac
+    echo
+}
+
+cmd_install_all_agents() {
+    echo
+    echo "${BOLD}${BLUE}Instalando en todos los agentes detectados${RESET}"
+    echo "${BLUE}──────────────────────────────────────────${RESET}"
+    echo
+
+    local detected
+    mapfile -t detected < <(detect_agents)
+
+    if [ ${#detected[@]} -eq 0 ]; then
+        echo "  ${YELLOW}No se detectaron agentes. Instalando en pi por defecto.${RESET}"
+        DEST_DIR="$HOME/.pi/agent/skills" cmd_install_all "pi"
+        return
+    fi
+
+    for agent in "${detected[@]}"; do
+        echo "  ${BOLD}→ Instalando para ${CYAN}$agent${RESET} ..."
+        local agent_dir; agent_dir=$(get_agent_dir "$agent")
+        DEST_DIR="$agent_dir" cmd_install_all "$agent"
+        echo
+    done
+
+    echo "  ${GREEN}✔${RESET} Instalación multi-agente completada."
     echo
 }
 
@@ -260,16 +355,47 @@ cmd_uninstall_one() {
     echo
 }
 
+# ─── Detección de agentes ──────────────────────────────────────────────────
+
+detect_agents() {
+    local detected=()
+    for entry in "${AGENT_SKILLS_DIRS[@]}"; do
+        local agent="${entry%%:*}"
+        local dir="${entry#*:}"
+        case "$agent" in
+            pi)     command -v pi &>/dev/null || [ -d "$HOME/.pi" ] && detected+=("pi") ;;
+            claude) command -v claude &>/dev/null || [ -d "$HOME/.claude" ] && detected+=("claude") ;;
+            codex)  command -v codex &>/dev/null || [ -d "$HOME/.codex" ] && detected+=("codex") ;;
+        esac
+    done
+    printf '%s\n' "${detected[@]}"
+}
+
+get_agent_dir() {
+    local agent="$1"
+    for entry in "${AGENT_SKILLS_DIRS[@]}"; do
+        [[ "${entry%%:*}" == "$agent" ]] && echo "${entry#*:}" && return 0
+    done
+    echo ""
+    return 1
+}
+
 # ─── Modo interactivo ────────────────────────────────────────────────────────
 
 interactive_menu() {
+    local detected
+    mapfile -t detected < <(detect_agents)
+
     echo
     echo "${BOLD}${BLUE}╔══════════════════════════════════════════════╗${RESET}"
     echo "${BOLD}${BLUE}║      Academic Research Suite Installer       ║${RESET}"
-    echo "${BOLD}${BLUE}║           para pi-coding-agent               ║${RESET}"
+    echo "${BOLD}${BLUE}║     pi · Claude Code · Codex compatible      ║${RESET}"
     echo "${BOLD}${BLUE}╚══════════════════════════════════════════════╝${RESET}"
     echo
     echo "  Destino: ${CYAN}$DEST_DIR${RESET}"
+    if [ ${#detected[@]} -gt 0 ]; then
+        echo "  Agentes detectados: ${GREEN}${detected[*]}${RESET}"
+    fi
     echo
 
     # Mostrar skills con números
@@ -339,32 +465,64 @@ interactive_menu() {
 
 cmd_help() {
     echo
-    echo "${BOLD}Academic Research Suite — Installer${RESET}"
+    echo "${BOLD}Academic Research Suite — Installer (multi-agente)${RESET}"
     echo
     echo "  ${BOLD}USO:${RESET}"
-    echo "    ./install.sh                     Modo interactivo (menú)"
-    echo "    ./install.sh --all               Instalar todas las skills"
-    echo "    ./install.sh <skill-name>        Instalar una skill específica"
-    echo "    ./install.sh --uninstall <name>  Desinstalar una skill"
-    echo "    ./install.sh --uninstall --all   Desinstalar todas las skills"
-    echo "    ./install.sh --list              Listar skills disponibles"
-    echo "    ./install.sh --status            Ver estado de instalación"
-    echo "    ./install.sh --help              Esta ayuda"
+    echo "    ./install.sh                          Modo interactivo (menú)"
+    echo "    ./install.sh --all                    Instalar todas las skills (pi)"
+    echo "    ./install.sh --all --agent claude     Instalar todas para Claude Code"
+    echo "    ./install.sh --all --agent codex      Instalar todas para Codex CLI"
+    echo "    ./install.sh --all --agent all        Instalar en todos los agentes"
+    echo "    ./install.sh <skill-name>             Instalar una skill"
+    echo "    ./install.sh --uninstall <name>       Desinstalar una skill"
+    echo "    ./install.sh --uninstall --all        Desinstalar todas"
+    echo "    ./install.sh --list                   Listar skills disponibles"
+    echo "    ./install.sh --status                 Ver estado de instalación"
+    echo "    ./install.sh --help                   Esta ayuda"
+    echo
+    echo "  ${BOLD}AGENTES SOPORTADOS:${RESET}"
+    echo "    pi       → ~/.pi/agent/skills/       (pi-coding-agent)"
+    echo "    claude   → ~/.claude/skills/         (Claude Code / Anthropic)"
+    echo "    codex    → ~/.codex/skills/          (OpenAI Codex CLI)"
+    echo "    all      → Instala en todos los agentes detectados"
     echo
     echo "  ${BOLD}VARIABLES DE ENTORNO:${RESET}"
     echo "    PI_SKILLS_DIR      Directorio destino (default: ~/.pi/agent/skills/)"
     echo
     echo "  ${BOLD}EJEMPLOS:${RESET}"
     echo "    ./install.sh --all"
+    echo "    ./install.sh --all --agent claude"
+    echo "    ./install.sh --all --agent all"
     echo "    ./install.sh literature-discovery"
     echo "    ./install.sh --uninstall reviewer"
-    echo "    PI_SKILLS_DIR=.pi/skills ./install.sh --all   # Instalar en proyecto local"
+    echo "    PI_SKILLS_DIR=.pi/skills ./install.sh --all"
     echo
 }
 
 # ─── Entrypoint ───────────────────────────────────────────────────────────────
 
 main() {
+    # Parse --agent flag before other args
+    local agent=""
+    local args=()
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --agent)
+                agent="$2"
+                shift 2
+                ;;
+            --agent=*)
+                agent="${1#*=}"
+                shift
+                ;;
+            *)
+                args+=("$1")
+                shift
+                ;;
+        esac
+    done
+    set -- "${args[@]}"
+
     if [ $# -eq 0 ]; then
         interactive_menu
         exit 0
@@ -381,7 +539,7 @@ main() {
             cmd_status
             ;;
         --all|-a)
-            cmd_install_all
+            cmd_install_all "$agent"
             ;;
         --uninstall|-u)
             shift

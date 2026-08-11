@@ -1,0 +1,37 @@
+{
+  "name": "academic-research-suite",
+  "version": "0.1.0",
+  "description": "Colección de 16 skills para investigación académica: descubrimiento de literatura, análisis de novedad, diseño metodológico, escritura científica y revisión pre-submission. Compatible con pi, Claude Code y Codex.",
+  "author": {
+    "name": "Alexandra La Cruz",
+    "url": "https://github.com/alexandralacruz"
+  },
+  "homepage": "https://github.com/alexandralacruz/academic-research-suite",
+  "repository": "https://github.com/alexandralacruz/academic-research-suite",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "academic-research",
+    "paper-writing",
+    "literature-review",
+    "scientific-writing"
+  ],
+  "skills": [
+    "./literature-discovery",
+    "./state-of-the-art",
+    "./research-gap",
+    "./novelty-analysis",
+    "./title-generator",
+    "./abstract-writer",
+    "./keywords-generator",
+    "./paper-outline",
+    "./methodology-designer",
+    "./related-work",
+    "./discussion-writer",
+    "./conclusion-writer",
+    "./journal-selector",
+    "./reviewer",
+    "./reference-checker",
+    "./research-manager"
+  ]
+}

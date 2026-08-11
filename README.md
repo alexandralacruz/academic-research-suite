@@ -1,22 +1,34 @@
 # Academic Research Suite
 
-> Colección de Skills especializadas para **pi-coding-agent** que cubren todo el ciclo de investigación científica: desde el descubrimiento de literatura hasta la revisión pre-submission.
+> Colección de 16 Skills especializadas que cubren todo el ciclo de investigación científica: desde el descubrimiento de literatura hasta la revisión pre-submission.
 
-**16 skills · 5 fases · 1 orquestador**
+**16 skills · 5 fases · 1 orquestador · multi-agente**
+
+Compatible con cualquier AI coding agent que siga el estándar [Agent Skills](https://agentskills.io/specification):
+
+| Agente | Comando de instalación | Skills se instalan en |
+|--------|----------------------|----------------------|
+| [**pi**](https://github.com/badlogic/pi-coding-agent) | `./install.sh --all` | `~/.pi/agent/skills/` |
+| [**Claude Code**](https://docs.anthropic.com/en/docs/claude-code) | `./install.sh --all --agent claude` | `~/.claude/skills/` |
+| [**Codex CLI**](https://github.com/openai/codex) | `./install.sh --all --agent codex` | `~/.codex/skills/` |
+| **Cualquier harness** | `PI_SKILLS_DIR=<ruta> ./install.sh --all` | La ruta que especifiques |
 
 ---
 
 ## 🚀 Instalación rápida
 
 ```bash
-# Clonar el repositorio
-git clone https://github.com/usuario/academic-research-suite.git
+# 1. Clonar el repositorio
+git clone https://github.com/alexandralacruz/academic-research-suite.git
 cd academic-research-suite
 
-# Instalar todas las skills (global)
-./install.sh --all
+# 2. Instalar en tu agente
+./install.sh --all                    # pi (por defecto)
+./install.sh --all --agent claude     # Claude Code
+./install.sh --all --agent codex      # Codex CLI
+./install.sh --all --agent all        # Todos los agentes detectados
 
-# O instalar solo las que necesites
+# 3. O instalar solo las skills que necesites
 ./install.sh literature-discovery
 ./install.sh reviewer
 ```
@@ -26,23 +38,26 @@ cd academic-research-suite
 | Comando | Descripción |
 |---------|-------------|
 | `./install.sh` | Menú interactivo (elegir skills una a una) |
-| `./install.sh --all` | Instalar las 16 skills de una vez |
+| `./install.sh --all` | Instalar las 16 skills en pi |
+| `./install.sh --all --agent <agente>` | Instalar en claude, codex, o all |
 | `./install.sh <nombre>` | Instalar una skill específica |
 | `./install.sh --list` | Ver todas las skills disponibles |
 | `./install.sh --status` | Ver estado de instalación |
 | `./install.sh --uninstall <nombre>` | Desinstalar una skill |
 | `./install.sh --uninstall --all` | Desinstalar todo |
+| `./install.sh --help` | Ver todos los agentes y opciones |
 
-### Destino personalizado
-
-Por defecto se instalan en `~/.pi/agent/skills/`. Para otro destino:
+### Destino personalizado (cualquier harness)
 
 ```bash
-# Instalar en un proyecto local
+# Instalar en un proyecto local (pi)
 PI_SKILLS_DIR=.pi/skills ./install.sh --all
 
-# Compartir con Claude Code
-PI_SKILLS_DIR=~/.claude/skills ./install.sh --all
+# Instalar en un harness específico con ruta custom
+PI_SKILLS_DIR=~/.mi-agente/skills ./install.sh --all
+
+# Compartir skills entre agentes con symlinks
+ln -s ~/.pi/agent/skills ~/.claude/skills
 ```
 
 ---
@@ -132,7 +147,9 @@ research-manager  ← Orquestador que guía el flujo completo
 
 ---
 
-## 📖 Uso en pi
+## 📖 Uso
+
+Las skills se invocan igual en todos los agentes mediante el prefijo `/skill:` seguido del nombre:
 
 ```bash
 # 1. Cargar el orquestador para empezar un proyecto guiado
@@ -146,6 +163,8 @@ research-manager  ← Orquestador que guía el flujo completo
 
 # 3. El manager te dirá qué skill ejecutar a continuación
 ```
+
+> **💡 Tip:** En algunos agentes el comando exacto puede variar ligeramente (ej. `@skill:` o mención). Consulta la documentación de tu harness. El contenido de `SKILL.md` es el mismo — lo lee el agente como instrucciones de sistema.
 
 ### Ejemplo de flujo completo
 
@@ -177,11 +196,22 @@ research-manager  ← Orquestador que guía el flujo completo
 
 ---
 
-## 🔗 Requisitos
+## 🔗 Requisitos y compatibilidad
 
-- **[pi-coding-agent](https://github.com/badlogic/pi-coding-agent)** instalado
 - Bash (Linux/macOS/WSL)
-- Cada skill es solo markdown — sin dependencias externas
+- Cada skill es solo markdown — **sin dependencias externas**
+- Compatible con cualquier AI coding agent que cargue skills desde un directorio:
+
+| Agente | Skills dir | ¿Probado? |
+|--------|-----------|-----------|
+| [pi](https://github.com/badlogic/pi-coding-agent) | `~/.pi/agent/skills/` | ✅ |
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | `~/.claude/skills/` | ✅ |
+| [Codex CLI](https://github.com/openai/codex) | `~/.codex/skills/` | ✅ |
+| [Aider](https://aider.chat/) | `~/.aider/skills/` | ⚡ |
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `~/.gemini/skills/` | ⚡ |
+| Cualquier harness Agent Skills | Configurable vía `PI_SKILLS_DIR` | ⚡ |
+
+> ✅ Probado · ⚡ Compatible con el estándar [Agent Skills spec](https://agentskills.io/specification)
 
 ---
 
@@ -190,7 +220,10 @@ research-manager  ← Orquestador que guía el flujo completo
 ```
 academic-research-suite/
 ├── README.md
-├── install.sh                    ← Instalador interactivo
+├── install.sh                      ← Instalador multi-agente
+├── .claude-plugin/
+│   ├── plugin.json                 ← Marketplace de Claude Code
+│   └── marketplace.json
 ├── literature-discovery/
 │   └── SKILL.md
 ├── state-of-the-art/
@@ -226,6 +259,8 @@ academic-research-suite/
 ```
 
 Cada `SKILL.md` sigue el [Agent Skills standard](https://agentskills.io/specification) con frontmatter YAML (`name`, `description`) y contenido en markdown con instrucciones detalladas, formatos de salida, criterios de calidad e integración con otras skills.
+
+> **💡 La magia:** Solo necesitás la carpeta de la skill y su `SKILL.md`. No hay dependencias, no hay scripts, no hay configuraciones adicionales. Copiala a la carpeta `skills/` de cualquier agente y funciona.
 
 ---
 

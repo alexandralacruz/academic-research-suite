@@ -1,0 +1,25 @@
+{
+  "name": "academic-research-suite",
+  "owner": {
+    "name": "Alexandra La Cruz",
+    "url": "https://github.com/alexandralacruz"
+  },
+  "description": "16 skills especializadas para investigación académica: desde el descubrimiento de literatura hasta la revisión pre-submission. Cubre 5 fases del ciclo de investigación científica.",
+  "plugins": [
+    {
+      "name": "academic-research-suite",
+      "source": "./",
+      "description": "Suite completa de investigación académica: literature-discovery, state-of-the-art, research-gap, novelty-analysis, methodology-designer, paper-outline, title-generator, related-work, discussion-writer, conclusion-writer, abstract-writer, keywords-generator, reference-checker, journal-selector, reviewer, research-manager. Formato Agent Skills estándar — compatible con pi, Claude Code y Codex.",
+      "category": "research",
+      "keywords": [
+        "academic",
+        "research",
+        "paper",
+        "literature-review",
+        "scientific-writing",
+        "peer-review",
+        "agent-skills"
+      ]
+    }
+  ]
+}
