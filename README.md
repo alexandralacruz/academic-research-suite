@@ -17,20 +17,42 @@ Compatible con cualquier AI coding agent que siga el estándar [Agent Skills](ht
 
 ## 🚀 Instalación rápida
 
+### Mac / Linux (terminal)
+
 ```bash
-# 1. Clonar el repositorio
+# One-liner (el repo se clona solo):
+curl -sSL https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.sh | bash -s -- --all --agent codex
+
+# O clonar e instalar manualmente:
 git clone https://github.com/alexandralacruz/academic-research-suite.git
 cd academic-research-suite
-
-# 2. Instalar en tu agente
 ./install.sh --all                    # pi (por defecto)
 ./install.sh --all --agent claude     # Claude Code
 ./install.sh --all --agent codex      # Codex CLI
 ./install.sh --all --agent all        # Todos los agentes detectados
+```
 
-# 3. O instalar solo las skills que necesites
-./install.sh literature-discovery
-./install.sh reviewer
+### Windows (PowerShell)
+
+```powershell
+# One-liner desde PowerShell:
+irm https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.ps1 | iex
+Install-AcademicSkills -All -Agent codex
+
+# O descargar y ejecutar:
+git clone https://github.com/alexandralacruz/academic-research-suite.git
+cd academic-research-suite
+.\install.ps1 -All -Agent codex       # Codex CLI
+.\install.ps1 -All -Agent claude      # Claude Code
+.\install.ps1 -All                    # pi
+.\install.ps1 -All -Agent all         # Todos los agentes
+```
+
+### Windows (Git Bash / WSL)
+
+```bash
+# Usá el mismo one-liner que Mac/Linux:
+curl -sSL https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.sh | bash -s -- --all --agent codex
 ```
 
 ### Opciones de instalación

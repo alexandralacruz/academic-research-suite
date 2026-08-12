@@ -55,8 +55,9 @@ if ! _is_local_repo; then
     fi
 
     cd "$TMP_DIR"
-    exec bash "$TMP_DIR/install.sh" "$@"
-    exit 0
+    # Sin exec: compatible con Windows (Git Bash) donde execvp falla
+    "$TMP_DIR/install.sh" "$@"
+    exit $?
 fi
 
 # ─── Configuración ───────────────────────────────────────────────────────────
