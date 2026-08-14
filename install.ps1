@@ -18,7 +18,7 @@
 #
 # One-liner desde PowerShell (descargar y ejecutar):
 #   iwr https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.ps1 -OutFile "$env:TEMP\install.ps1"
-#   & "$env:TEMP\install.ps1" -All -Agent codex
+#   powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\install.ps1" -All -Agent codex
 # =============================================================================
 
 param(
@@ -33,6 +33,23 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
+# ─── Asegurar ExecutionPolicy (RemoteSigned) para el usuario actual ─────────
+# Si la política bloquea scripts (Restricted/Undefined), la ajusta automáticamente
+# para que el usuario no tenga que ejecutar Set-ExecutionPolicy manualmente.
+# (Aplica solo al usuario actual; no requiere permisos de administrador.)
+
+try {
+    $policy = Get-ExecutionPolicy -ErrorAction SilentlyContinue
+    if (-not $policy -or $policy -eq "Restricted" -or $policy -eq "Undefined") {
+        Write-Host "→ La ExecutionPolicy ($policy) bloquea scripts. Ajustando a RemoteSigned (CurrentUser)..." -ForegroundColor Yellow
+        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force -ErrorAction Stop
+        Write-Host "  ✔ ExecutionPolicy: RemoteSigned (CurrentUser)" -ForegroundColor Green
+    }
+} catch {
+    Write-Host "⚠ No se pudo ajustar la ExecutionPolicy automáticamente. Ejecuta manualmente:" -ForegroundColor Yellow
+    Write-Host "  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser" -ForegroundColor Yellow
+}
 
 # ─── Configuración ───────────────────────────────────────────────────────────
 
@@ -67,7 +84,7 @@ function Get-SuiteClone {
         Write-Host "  git clone $RepoUrl && cd academic-research-suite && .\install.ps1 -All -Agent codex"
         return $null
     }
-    git clone --depth 1 $RepoUrl $cloneDir 2>&1 | Out-Host
+    git clone --depth 1 $RepoUrl $cloneDir | Out-Host
     if ($LASTEXITCODE -ne 0 -or -not (Test-Path (Join-Path $cloneDir "install.ps1"))) {
         Write-Host "Error: no se pudo clonar el repositorio." -ForegroundColor Red
         return $null
@@ -299,7 +316,7 @@ function Show-HelpText {
     Write-Host ""
     Write-Host "  ONE-LINER (PowerShell):"
     Write-Host '    iwr https://raw.../install.ps1 -OutFile "$env:TEMP\install.ps1"'
-    Write-Host '    & "$env:TEMP\install.ps1" -All -Agent codex'
+    Write-Host '    powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\install.ps1" -All -Agent codex'
     Write-Host ""
 }
 

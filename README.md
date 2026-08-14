@@ -37,7 +37,7 @@ cd academic-research-suite
 ```powershell
 # One-liner desde PowerShell (el repo se clona solo):
 iwr https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.ps1 -OutFile "$env:TEMP\install.ps1"
-& "$env:TEMP\install.ps1" -All -Agent codex
+powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\install.ps1" -All -Agent codex
 
 # O clonar e instalar manualmente:
 git clone https://github.com/alexandralacruz/academic-research-suite.git
