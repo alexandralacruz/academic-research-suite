@@ -35,11 +35,11 @@ cd academic-research-suite
 ### Windows (PowerShell)
 
 ```powershell
-# One-liner desde PowerShell:
-irm https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.ps1 | iex
-Install-AcademicSkills -All -Agent codex
+# One-liner desde PowerShell (el repo se clona solo):
+iwr https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.ps1 -OutFile "$env:TEMP\install.ps1"
+& "$env:TEMP\install.ps1" -All -Agent codex
 
-# O descargar y ejecutar:
+# O clonar e instalar manualmente:
 git clone https://github.com/alexandralacruz/academic-research-suite.git
 cd academic-research-suite
 .\install.ps1 -All -Agent codex       # Codex CLI
@@ -68,6 +68,8 @@ curl -sSL https://raw.githubusercontent.com/alexandralacruz/academic-research-su
 | `./install.sh --uninstall <nombre>` | Desinstalar una skill |
 | `./install.sh --uninstall --all` | Desinstalar todo |
 | `./install.sh --help` | Ver todos los agentes y opciones |
+
+> **💡 Windows (PowerShell):** mismas opciones con `.\install.ps1`, usando un solo guion en los parámetros: `-All`, `-Agent <agente>`, `-Skill <nombre>`, `-List`, `-Status`, `-Uninstall <nombre>`, `-UninstallAll`, `-Help`.
 
 ### Destino personalizado (cualquier harness)
 
@@ -220,7 +222,8 @@ Las skills se invocan igual en todos los agentes mediante el prefijo `/skill:` s
 
 ## 🔗 Requisitos y compatibilidad
 
-- Bash (Linux/macOS/WSL)
+- Bash (Linux/macOS/WSL) o PowerShell (Windows)
+- `git` (solo para el one-liner, que clona el repo automáticamente) — **no se necesita npm**
 - Cada skill es solo markdown — **sin dependencias externas**
 - Compatible con cualquier AI coding agent que cargue skills desde un directorio:
 

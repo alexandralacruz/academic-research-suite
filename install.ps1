@@ -16,9 +16,9 @@
 #   .\install.ps1 -Uninstall reviewer      # Desinstalar una skill
 #   .\install.ps1 -UninstallAll            # Desinstalar todas
 #
-# One-liner desde PowerShell:
-#   irm https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.ps1 | iex
-#   irm https://raw... | iex; Install-AcademicSkills -All -Agent codex
+# One-liner desde PowerShell (descargar y ejecutar):
+#   iwr https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.ps1 -OutFile "$env:TEMP\install.ps1"
+#   & "$env:TEMP\install.ps1" -All -Agent codex
 # =============================================================================
 
 param(
@@ -48,6 +48,44 @@ $AgentDirs = @{
 
 $RepoUrl = "https://github.com/alexandralacruz/academic-research-suite.git"
 
+# ─── Bootstrap remoto: clonar el repo si no hay skills locales ──────────────
+
+function Test-LocalRepo {
+    param([string]$Dir)
+    if ([string]::IsNullOrEmpty($Dir) -or -not (Test-Path $Dir)) { return $false }
+    $found = @(Get-ChildItem -Path $Dir -Directory -ErrorAction SilentlyContinue | Where-Object {
+        Test-Path (Join-Path $_.FullName "SKILL.md")
+    })
+    return ($found.Count -gt 0)
+}
+
+function Get-SuiteClone {
+    $cloneDir = Join-Path $env:TEMP ("academic-research-suite-" + [guid]::NewGuid().ToString("N").Substring(0, 8))
+    Write-Host "→ Clonando Academic Research Suite..." -ForegroundColor Cyan
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+        Write-Host "Error: git no encontrado. Instala git o clona el repo manualmente:" -ForegroundColor Red
+        Write-Host "  git clone $RepoUrl && cd academic-research-suite && .\install.ps1 -All -Agent codex"
+        return $null
+    }
+    git clone --depth 1 $RepoUrl $cloneDir 2>&1 | Out-Host
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path (Join-Path $cloneDir "install.ps1"))) {
+        Write-Host "Error: no se pudo clonar el repositorio." -ForegroundColor Red
+        return $null
+    }
+    return $cloneDir
+}
+
+# Si el script se ejecutó "suelto" (descargado sin las carpetas de skills),
+# clonar el repo y re-ejecutar la copia clonada.
+if (-not (Test-LocalRepo $ScriptDir)) {
+    $cloneDir = Get-SuiteClone
+    if (-not $cloneDir) { exit 1 }
+    & (Join-Path $cloneDir "install.ps1") @PSBoundParameters
+    $exitCode = $LASTEXITCODE
+    Remove-Item -Recurse -Force $cloneDir -ErrorAction SilentlyContinue
+    exit $exitCode
+}
+
 # ─── Funciones ───────────────────────────────────────────────────────────────
 
 function Get-AgentDir($agentName) {
@@ -65,7 +103,7 @@ function Get-AvailableSkills {
 }
 
 function Get-SkillDescription($skillName) {
-    $skillFile = Join-Path $ScriptDir $skillName "SKILL.md"
+    $skillFile = Join-Path (Join-Path $ScriptDir $skillName) "SKILL.md"
     if (Test-Path $skillFile) {
         $content = Get-Content $skillFile -Raw
         if ($content -match "description:\s*(.+?)(\r?\n|$)") {
@@ -107,7 +145,7 @@ function Uninstall-Skill($skillName, $destDir) {
 }
 
 function Test-IsInstalled($skillName, $destDir) {
-    return (Test-Path (Join-Path $destDir $skillName "SKILL.md"))
+    return (Test-Path (Join-Path (Join-Path $destDir $skillName) "SKILL.md"))
 }
 
 # ─── Comandos ────────────────────────────────────────────────────────────────
@@ -260,19 +298,12 @@ function Show-HelpText {
     Write-Host "    .\install.ps1 -UninstallAll            Desinstalar todas"
     Write-Host ""
     Write-Host "  ONE-LINER (PowerShell):"
-    Write-Host "    irm https://raw.../install.ps1 | iex; Install-AcademicSkills -All -Agent codex"
+    Write-Host '    iwr https://raw.../install.ps1 -OutFile "$env:TEMP\install.ps1"'
+    Write-Host '    & "$env:TEMP\install.ps1" -All -Agent codex'
     Write-Host ""
 }
 
 # ─── Entrypoint ───────────────────────────────────────────────────────────────
-
-# Si se ejecuta via irm | iex, exponer la función y salir
-if ($MyInvocation.InvocationName -eq "") {
-    # Pipe desde irm → solo exponer funciones, no ejecutar
-    Write-Host "Academic Research Suite — Funciones cargadas." -ForegroundColor Green
-    Write-Host "  Install-AcademicSkills -All -Agent codex" -ForegroundColor Cyan
-    return
-}
 
 if ($Help) { Show-HelpText; exit 0 }
 if ($List) { Show-List; exit 0 }
