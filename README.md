@@ -1,46 +1,46 @@
 # Academic Research Suite
 
-> Colección de 16 Skills especializadas que cubren todo el ciclo de investigación científica: desde el descubrimiento de literatura hasta la revisión pre-submission.
+> A collection of 16 specialized skills covering the entire scientific research cycle: from literature discovery to pre-submission review.
 
-**16 skills · 5 fases · 1 orquestador · multi-agente**
+**16 skills · 5 phases · 1 orchestrator · multi-agent**
 
-Compatible con cualquier AI coding agent que siga el estándar [Agent Skills](https://agentskills.io/specification):
+Compatible with any AI coding agent that follows the [Agent Skills](https://agentskills.io/specification) standard:
 
-| Agente | Comando de instalación | Skills se instalan en |
-|--------|----------------------|----------------------|
+| Agent | Install command | Skills are installed to |
+|-------|----------------|------------------------|
 | [**pi**](https://github.com/badlogic/pi-coding-agent) | `./install.sh --all` | `~/.pi/agent/skills/` |
 | [**Claude Code**](https://docs.anthropic.com/en/docs/claude-code) | `./install.sh --all --agent claude` | `~/.claude/skills/` |
 | [**Codex CLI**](https://github.com/openai/codex) | `./install.sh --all --agent codex` | `~/.codex/skills/` |
-| **Cualquier harness** | `PI_SKILLS_DIR=<ruta> ./install.sh --all` | La ruta que especifiques |
+| **Any harness** | `PI_SKILLS_DIR=<path> ./install.sh --all` | The path you specify |
 
 ---
 
-## 🚀 Instalación rápida
+## 🚀 Quick install
 
 ### Mac / Linux (terminal)
 
 ```bash
-# One-liner — NO requiere git (si no está, descarga el repo como ZIP):
+# One-liner — does NOT require git (if missing, it downloads the repo as a ZIP):
 curl -sSL https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.sh | bash -s -- --all --agent codex
 
-# O clonar e instalar manualmente:
+# Or clone and install manually:
 git clone https://github.com/alexandralacruz/academic-research-suite.git
 cd academic-research-suite
-./install.sh --all                    # pi (por defecto)
+./install.sh --all                    # pi (default)
 ./install.sh --all --agent claude     # Claude Code
 ./install.sh --all --agent codex      # Codex CLI
-./install.sh --all --agent all        # Todos los agentes detectados
+./install.sh --all --agent all        # All detected agents
 ```
 
-### Mac / Linux sin git (descarga manual del ZIP)
+### Mac / Linux without git (manual ZIP download)
 
 ```bash
-# 1. Descargá y descomprimí el ZIP:
+# 1. Download and extract the ZIP:
 curl -sSL -o /tmp/academic-research-suite.zip \
   https://github.com/alexandralacruz/academic-research-suite/archive/refs/heads/main.zip
 unzip /tmp/academic-research-suite.zip -d /tmp/academic-research-suite
 
-# 2. Entrá a la carpeta y ejecutá:
+# 2. Enter the folder and run:
 cd /tmp/academic-research-suite/academic-research-suite-main
 ./install.sh --all --agent codex
 ```
@@ -48,28 +48,28 @@ cd /tmp/academic-research-suite/academic-research-suite-main
 ### Windows (PowerShell)
 
 ```powershell
-# One-liner desde PowerShell — NO requiere git (si no está, descarga el repo como ZIP):
+# One-liner from PowerShell — does NOT require git (if missing, it downloads the repo as a ZIP):
 iwr https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.ps1 -OutFile "$env:TEMP\install.ps1"
 powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\install.ps1" -All -Agent codex
 
-# O clonar e instalar manualmente:
+# Or clone and install manually:
 git clone https://github.com/alexandralacruz/academic-research-suite.git
 cd academic-research-suite
 .\install.ps1 -All -Agent codex       # Codex CLI
 .\install.ps1 -All -Agent claude      # Claude Code
 .\install.ps1 -All                    # pi
-.\install.ps1 -All -Agent all         # Todos los agentes
+.\install.ps1 -All -Agent all         # All agents
 ```
 
-### Windows sin git (descarga manual del ZIP)
+### Windows without git (manual ZIP download)
 
-Si no tenés git ni querés usar el one-liner, descargá el ZIP y descomprimí:
+If you don't have git or don't want to use the one-liner, download the ZIP and extract it:
 
 ```powershell
-# 1. Descargá el ZIP en tu navegador (o con este comando):
+# 1. Download the ZIP in your browser (or with this command):
 #    https://github.com/alexandralacruz/academic-research-suite/archive/refs/heads/main.zip
 
-# 2. Descomprimilo y entrá a la carpeta, luego ejecutá:
+# 2. Extract it, enter the folder, then run:
 Expand-Archive -Path "$env:USERPROFILE\Downloads\academic-research-suite-main.zip" -DestinationPath "$env:USERPROFILE\Downloads\"
 cd "$env:USERPROFILE\Downloads\academic-research-suite-main"
 .\install.ps1 -All -Agent codex
@@ -78,203 +78,205 @@ cd "$env:USERPROFILE\Downloads\academic-research-suite-main"
 ### Windows (Git Bash / WSL)
 
 ```bash
-# Usá el mismo one-liner que Mac/Linux (no requiere git):
+# Use the same one-liner as Mac/Linux (no git required):
 curl -sSL https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.sh | bash -s -- --all --agent codex
 ```
 
-### Opciones de instalación
+### Installation options
 
-| Comando | Descripción |
+| Command | Description |
 |---------|-------------|
-| `./install.sh` | Menú interactivo (elegir skills una a una) |
-| `./install.sh --all` | Instalar las 16 skills en pi |
-| `./install.sh --all --agent <agente>` | Instalar en claude, codex, o all |
-| `./install.sh <nombre>` | Instalar una skill específica |
-| `./install.sh --list` | Ver todas las skills disponibles |
-| `./install.sh --status` | Ver estado de instalación |
-| `./install.sh --uninstall <nombre>` | Desinstalar una skill |
-| `./install.sh --uninstall --all` | Desinstalar todo |
-| `./install.sh --help` | Ver todos los agentes y opciones |
+| `./install.sh` | Interactive menu (pick skills one by one) |
+| `./install.sh --all` | Install all 16 skills into pi |
+| `./install.sh --all --agent <agent>` | Install into claude, codex, or all |
+| `./install.sh <name>` | Install a specific skill |
+| `./install.sh --list` | List all available skills |
+| `./install.sh --status` | Show installation status |
+| `./install.sh --uninstall <name>` | Uninstall a skill |
+| `./install.sh --uninstall --all` | Uninstall everything |
+| `./install.sh --help` | Show all agents and options |
 
-> **💡 Windows (PowerShell):** mismas opciones con `.\install.ps1`, usando un solo guion en los parámetros: `-All`, `-Agent <agente>`, `-Skill <nombre>`, `-List`, `-Status`, `-Uninstall <nombre>`, `-UninstallAll`, `-Help`.
+> **💡 Windows (PowerShell):** same options with `.\install.ps1`, using a single dash in the parameters: `-All`, `-Agent <agent>`, `-Skill <name>`, `-List`, `-Status`, `-Uninstall <name>`, `-UninstallAll`, `-Help`.
 
-### Destino personalizado (cualquier harness)
+### Custom destination (any harness)
 
 ```bash
-# Instalar en un proyecto local (pi)
+# Install into a local project (pi)
 PI_SKILLS_DIR=.pi/skills ./install.sh --all
 
-# Instalar en un harness específico con ruta custom
-PI_SKILLS_DIR=~/.mi-agente/skills ./install.sh --all
+# Install into a specific harness with a custom path
+PI_SKILLS_DIR=~/.my-agent/skills ./install.sh --all
 
-# Compartir skills entre agentes con symlinks
+# Share skills between agents with symlinks
 ln -s ~/.pi/agent/skills ~/.claude/skills
 ```
 
 ---
 
-## 🧭 Arquitectura
+## 🧭 Architecture
 
 ```
 Academic Research Suite
         │
         ├── Phase 1: EXPLORE ──────────────────────
-        │   ├── literature-discovery      ← Busca y mapea literatura
-        │   ├── state-of-the-art          ← Sintetiza papers en narrativa
-        │   └── research-gap              ← Identifica huecos de investigación
+        │   ├── literature-discovery      ← Searches and maps literature
+        │   ├── state-of-the-art          ← Synthesizes papers into a narrative
+        │   └── research-gap              ← Identifies research gaps
         │
         ├── Phase 2: VALIDATE ─────────────────────
-        │   └── novelty-analysis          ← Evalúa la novedad real de una idea
+        │   └── novelty-analysis          ← Evaluates the real novelty of an idea
         │
         ├── Phase 3: DESIGN ───────────────────────
-        │   ├── methodology-designer      ← Diseña experimentos y métodos
-        │   ├── paper-outline             ← Genera el esquema del paper
-        │   └── title-generator           ← Propone y evalúa títulos
+        │   ├── methodology-designer      ← Designs experiments and methods
+        │   ├── paper-outline             ← Generates the paper outline
+        │   └── title-generator           ← Proposes and evaluates titles
         │
         ├── Phase 4: WRITE ────────────────────────
-        │   ├── related-work              ← Escribe la sección de trabajos relacionados
-        │   ├── discussion-writer         ← Discusión interpretativa de resultados
-        │   ├── conclusion-writer         ← Conclusión con futuros trabajos accionables
-        │   ├── abstract-writer           ← Abstract multi-estilo (IEEE, ACM, Nature...)
-        │   └── keywords-generator        ← Keywords optimizadas para discoverability
+        │   ├── related-work              ← Writes the related work section
+        │   ├── discussion-writer         ← Interpretive discussion of results
+        │   ├── conclusion-writer         ← Conclusion with actionable future work
+        │   ├── abstract-writer           ← Multi-style abstract (IEEE, ACM, Nature...)
+        │   └── keywords-generator        ← Keywords optimized for discoverability
         │
         └── Phase 5: POLISH ───────────────────────
-            ├── reference-checker         ← Valida referencias (huérfanas, formato, DOI)
-            ├── journal-selector          ← Recomienda journals (Q, IF, scope fit)
-            └── reviewer                  ← Revisión pre-submission completa
+            ├── reference-checker         ← Validates references (orphans, format, DOI)
+            ├── journal-selector          ← Recommends journals (quartile, IF, scope fit)
+            └── reviewer                  ← Full pre-submission review
 
-research-manager  ← Orquestador que guía el flujo completo
+research-manager  ← Orchestrator that guides the full flow
 ```
 
 ---
 
-## 🎯 Skills disponibles
+## 🎯 Available skills
 
-### 🔍 Exploración
+### 🔍 Exploration
 
-| Skill | Qué hace | Cuándo usarla |
-|-------|----------|---------------|
-| `literature-discovery` | Descubre literatura, agrupa por líneas, detecta tendencias, identifica autores/datasets/herramientas | Al iniciar un proyecto |
-| `state-of-the-art` | Sintetiza papers en una narrativa: enfoques, fortalezas, debilidades, evolución | Escribir sección de background |
-| `research-gap` | Identifica problemas abiertos, datasets faltantes, métodos no comparados, dominios no explorados | Definir dirección de tesis/paper |
+| Skill | What it does | When to use it |
+|-------|--------------|----------------|
+| `literature-discovery` | Discovers literature, groups it by line of work, detects trends, identifies authors/datasets/tools | When starting a project |
+| `state-of-the-art` | Synthesizes papers into a narrative: approaches, strengths, weaknesses, evolution | Writing the background section |
+| `research-gap` | Identifies open problems, missing datasets, uncompared methods, unexplored domains | Defining a thesis/paper direction |
 
-### ✅ Validación
+### ✅ Validation
 
-| Skill | Qué hace | Cuándo usarla |
-|-------|----------|---------------|
-| `novelty-analysis` | Evalúa novedad real, compara con trabajos previos, posiciona la contribución | Antes de comprometerte con una dirección |
+| Skill | What it does | When to use it |
+|-------|--------------|----------------|
+| `novelty-analysis` | Evaluates real novelty, compares with prior work, positions the contribution | Before committing to a direction |
 
-### 🏗️ Diseño
+### 🏗️ Design
 
-| Skill | Qué hace | Cuándo usarla |
-|-------|----------|---------------|
-| `methodology-designer` | Diseña experimentos, formaliza problema, selecciona baselines y métricas, planifica ablaciones | Escribir la sección de método |
-| `paper-outline` | Genera esquema IMRaD con presupuesto de páginas, figuras planeadas, flujo narrativo | Planificar el paper antes de escribir |
-| `title-generator` | Propone títulos en estilos IEEE/ACM/Nature, evalúa novedad, impacto, discoverability | Elegir el título final |
+| Skill | What it does | When to use it |
+|-------|--------------|----------------|
+| `methodology-designer` | Designs experiments, formalizes the problem, selects baselines and metrics, plans ablations | Writing the method section |
+| `paper-outline` | Generates an IMRaD outline with a page budget, planned figures, narrative flow | Planning the paper before writing |
+| `title-generator` | Proposes titles in IEEE/ACM/Nature styles, evaluates novelty, impact, discoverability | Choosing the final title |
 
-### ✍️ Escritura
+### ✍️ Writing
 
-| Skill | Qué hace | Cuándo usarla |
-|-------|----------|---------------|
-| `related-work` | Escribe sección de trabajos relacionados, agrupando papers temáticamente, diferenciando la contribución | Redactar related work del paper |
-| `discussion-writer` | Interpreta resultados, explica hallazgos, reconoce limitaciones, extrae implicaciones | Escribir la discusión |
-| `conclusion-writer` | Resume contribuciones, propone futuro trabajo accionable (no genérico), cierra con fuerza | Finalizar el paper |
-| `abstract-writer` | Genera abstracts IEEE, ACM, Nature, Springer, estructurados, graphical abstract, plain-language | Preparar abstract para el venue |
-| `keywords-generator` | Genera keywords optimizadas para indexing, reviewer matching y discoverability | Completar metadata del paper |
+| Skill | What it does | When to use it |
+|-------|--------------|----------------|
+| `related-work` | Writes the related work section, grouping papers thematically and differentiating the contribution | Drafting the paper's related work |
+| `discussion-writer` | Interprets results, explains findings, acknowledges limitations, extracts implications | Writing the discussion |
+| `conclusion-writer` | Summarizes contributions, proposes actionable (not generic) future work, closes strongly | Finalizing the paper |
+| `abstract-writer` | Generates IEEE, ACM, Nature, Springer, structured, graphical, and plain-language abstracts | Preparing the abstract for the venue |
+| `keywords-generator` | Generates keywords optimized for indexing, reviewer matching, and discoverability | Completing the paper's metadata |
 
-### 🔧 Pulido
+### 🔧 Polishing
 
-| Skill | Qué hace | Cuándo usarla |
-|-------|----------|---------------|
-| `reference-checker` | Valida citas: huérfanas, formato, DOI, missing citations, autocitas, antigüedad | Antes de enviar |
-| `journal-selector` | Recomienda journals por scope, cuartil, IF, APC, tiempos de revisión, estrategia de submission | Elegir dónde publicar |
-| `reviewer` | Revisión completa pre-submission: novedad, claridad, rigor, validez, reproducibilidad, figuras, referencias | Último paso antes de enviar |
+| Skill | What it does | When to use it |
+|-------|--------------|----------------|
+| `reference-checker` | Validates citations: orphans, format, DOI, missing citations, self-citations, recency | Before submitting |
+| `journal-selector` | Recommends journals by scope, quartile, IF, APC, review times, submission strategy | Choosing where to publish |
+| `reviewer` | Full pre-submission review: novelty, clarity, rigor, validity, reproducibility, figures, references | Last step before submitting |
 
-### 🎛️ Orquestador
+### 🎛️ Orchestrator
 
-| Skill | Qué hace | Cuándo usarla |
-|-------|----------|---------------|
-| `research-manager` | Orquesta las skills en flujos de trabajo, sigue el progreso, recomienda próximos pasos | Gestionar un proyecto completo |
+| Skill | What it does | When to use it |
+|-------|--------------|----------------|
+| `research-manager` | Orchestrates skills into workflows, tracks progress, recommends next steps | Managing a complete project |
 
 ---
 
-## 📖 Uso
+## 📖 Usage
 
-Las skills se invocan igual en todos los agentes mediante el prefijo `/skill:` seguido del nombre:
+Skills are invoked the same way in all agents using the `/skill:` prefix followed by the name:
 
 ```bash
-# 1. Cargar el orquestador para empezar un proyecto guiado
+# 1. Load the orchestrator to start a guided project
 /skill:research-manager
 
-# 2. O invocar skills directamente según la fase
+# 2. Or invoke skills directly by phase
 /skill:literature-discovery
 /skill:research-gap
 /skill:title-generator
 /skill:reviewer
 
-# 3. El manager te dirá qué skill ejecutar a continuación
+# 3. The manager will tell you which skill to run next
 ```
 
-> **💡 Tip:** En algunos agentes el comando exacto puede variar ligeramente (ej. `@skill:` o mención). Consulta la documentación de tu harness. El contenido de `SKILL.md` es el mismo — lo lee el agente como instrucciones de sistema.
+> **💡 Tip:** On some agents the exact command may vary slightly (e.g. `@skill:` or a mention). Check your harness documentation. The `SKILL.md` content is the same — the agent reads it as system instructions.
 
-### Ejemplo de flujo completo
+### Full workflow example
 
 ```bash
-# Fase 1: Explorar
-/skill:literature-discovery     # → Research landscape con open problems
-/skill:research-gap             # → Gaps priorizados por impacto/feasibility
+# Phase 1: Explore
+/skill:literature-discovery     # → Research landscape with open problems
+/skill:research-gap             # → Gaps prioritized by impact/feasibility
 
-# Fase 2: Validar
-/skill:novelty-analysis         # → ¿Mi idea es realmente novedosa?
+# Phase 2: Validate
+/skill:novelty-analysis         # → Is my idea actually novel?
 
-# Fase 3: Diseñar
-/skill:methodology-designer     # → Protocolo experimental, baselines, métricas
-/skill:paper-outline            # → Esquema del paper con page budget
-/skill:title-generator          # → Títulos candidatos rankeados
+# Phase 3: Design
+/skill:methodology-designer     # → Experimental protocol, baselines, metrics
+/skill:paper-outline            # → Paper outline with a page budget
+/skill:title-generator          # → Ranked candidate titles
 
-# Fase 4: Escribir
-/skill:related-work             # → Sección de trabajos relacionados
-/skill:discussion-writer        # → Discusión interpretativa
-/skill:conclusion-writer        # → Conclusión con future work concreto
-/skill:abstract-writer          # → Abstract multi-estilo
-/skill:keywords-generator       # → Keywords optimizadas
+# Phase 4: Write
+/skill:related-work             # → Related work section
+/skill:discussion-writer        # → Interpretive discussion
+/skill:conclusion-writer        # → Conclusion with concrete future work
+/skill:abstract-writer          # → Multi-style abstract
+/skill:keywords-generator       # → Optimized keywords
 
-# Fase 5: Pulir
-/skill:reference-checker        # → Validación de referencias
-/skill:journal-selector         # → Dónde enviar (Q, IF, tiempos, APC)
-/skill:reviewer                 # → Revisión pre-submission completa
+# Phase 5: Polish
+/skill:reference-checker        # → Reference validation
+/skill:journal-selector         # → Where to submit (quartile, IF, times, APC)
+/skill:reviewer                 # → Full pre-submission review
 ```
 
 ---
 
-## 🔗 Requisitos y compatibilidad
+## 🔗 Requirements and compatibility
 
-- Bash (Linux/macOS/WSL) o PowerShell (Windows)
-- **`git` NO es necesario**: el one-liner lo usa si está disponible, y si no, descarga el repo como ZIP automáticamente — **no se necesita npm**
-- Cada skill es solo markdown — **sin dependencias externas**
-- Compatible con cualquier AI coding agent que cargue skills desde un directorio:
+- Bash (Linux/macOS/WSL) or PowerShell (Windows)
+- **`git` is NOT required**: the one-liner uses it if available, and otherwise downloads the repo as a ZIP automatically — **npm is not needed**
+- Each skill is just markdown — **no external dependencies**
+- Compatible with any AI coding agent that loads skills from a directory:
 
-| Agente | Skills dir | ¿Probado? |
-|--------|-----------|-----------|
+| Agent | Skills dir | Tested? |
+|-------|-----------|---------|
 | [pi](https://github.com/badlogic/pi-coding-agent) | `~/.pi/agent/skills/` | ✅ |
 | [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | `~/.claude/skills/` | ✅ |
 | [Codex CLI](https://github.com/openai/codex) | `~/.codex/skills/` | ✅ |
 | [Aider](https://aider.chat/) | `~/.aider/skills/` | ⚡ |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `~/.gemini/skills/` | ⚡ |
-| Cualquier harness Agent Skills | Configurable vía `PI_SKILLS_DIR` | ⚡ |
+| Any Agent Skills harness | Configurable via `PI_SKILLS_DIR` | ⚡ |
 
-> ✅ Probado · ⚡ Compatible con el estándar [Agent Skills spec](https://agentskills.io/specification)
+> ✅ Tested · ⚡ Compatible with the [Agent Skills spec](https://agentskills.io/specification)
 
 ---
 
-## 📁 Estructura del repositorio
+## 📁 Repository structure
 
 ```
 academic-research-suite/
 ├── README.md
-├── install.sh                      ← Instalador multi-agente
+├── LICENSE
+├── install.sh                      ← Multi-agent installer
+├── install.ps1                     ← Windows (PowerShell) installer
 ├── .claude-plugin/
-│   ├── plugin.json                 ← Marketplace de Claude Code
+│   ├── plugin.json                 ← Claude Code marketplace
 │   └── marketplace.json
 ├── literature-discovery/
 │   └── SKILL.md
@@ -310,22 +312,22 @@ academic-research-suite/
     └── SKILL.md
 ```
 
-Cada `SKILL.md` sigue el [Agent Skills standard](https://agentskills.io/specification) con frontmatter YAML (`name`, `description`) y contenido en markdown con instrucciones detalladas, formatos de salida, criterios de calidad e integración con otras skills.
+Each `SKILL.md` follows the [Agent Skills standard](https://agentskills.io/specification) with YAML frontmatter (`name`, `description`) and markdown content with detailed instructions, output formats, quality criteria, and integration with other skills.
 
-> **💡 La magia:** Solo necesitás la carpeta de la skill y su `SKILL.md`. No hay dependencias, no hay scripts, no hay configuraciones adicionales. Copiala a la carpeta `skills/` de cualquier agente y funciona.
+> **💡 The magic:** You only need the skill folder and its `SKILL.md`. No dependencies, no scripts, no extra configuration. Copy it to any agent's `skills/` folder and it works.
 
 ---
 
-## 🤝 Contribuir
+## 🤝 Contributing
 
-1. Fork del repositorio
-2. Crea una skill nueva: `mkdir mi-skill && vim mi-skill/SKILL.md`
-3. Sigue el formato de frontmatter del [Agent Skills spec](https://agentskills.io/specification)
-4. Documenta inputs, outputs e integraciones con otras skills
+1. Fork the repository
+2. Create a new skill: `mkdir my-skill && vim my-skill/SKILL.md`
+3. Follow the frontmatter format from the [Agent Skills spec](https://agentskills.io/specification)
+4. Document inputs, outputs, and integrations with other skills
 5. PR
 
 ---
 
-## 📄 Licencia
+## 📄 License
 
 MIT
