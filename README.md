@@ -379,7 +379,7 @@ Without prior written authorization from Alexandra La Cruz, users may not:
 - sublicense the suite for commercial purposes; or
 - otherwise commercially exploit the project.
 
-See [`LICENSE — ARS-NC 1.0`](LICENSE — ARS-NC 1.0) for the complete terms.
+See [`LICENSE — ARS-NC 1.0`](LICENSE) for the complete terms.
 
 ---
 
