@@ -16,7 +16,8 @@
 #   .\install.ps1 -Uninstall reviewer      # Desinstalar una skill
 #   .\install.ps1 -UninstallAll            # Desinstalar todas
 #
-# One-liner desde PowerShell (descargar y ejecutar):
+# One-liner desde PowerShell (descargar y ejecutar).
+# NOTA: NO requiere git — si no está instalado, descarga el repo como ZIP automáticamente:
 #   iwr https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.ps1 -OutFile "$env:TEMP\install.ps1"
 #   powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\install.ps1" -All -Agent codex
 # =============================================================================
@@ -64,6 +65,7 @@ $AgentDirs = @{
 }
 
 $RepoUrl = "https://github.com/alexandralacruz/academic-research-suite.git"
+$ZipUrl  = "https://codeload.github.com/alexandralacruz/academic-research-suite/zip/refs/heads/main"
 
 # ─── Bootstrap remoto: clonar el repo si no hay skills locales ──────────────
 
@@ -76,30 +78,71 @@ function Test-LocalRepo {
     return ($found.Count -gt 0)
 }
 
-function Get-SuiteClone {
+function Get-SuiteSource {
     $cloneDir = Join-Path $env:TEMP ("academic-research-suite-" + [guid]::NewGuid().ToString("N").Substring(0, 8))
-    Write-Host "→ Clonando Academic Research Suite..." -ForegroundColor Cyan
-    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-        Write-Host "Error: git no encontrado. Instala git o clona el repo manualmente:" -ForegroundColor Red
-        Write-Host "  git clone $RepoUrl && cd academic-research-suite && .\install.ps1 -All -Agent codex"
+
+    # ── Opción 1: git clone (si git está disponible) ────────────────────────
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        Write-Host "→ Descargando Academic Research Suite (git)..." -ForegroundColor Cyan
+        git clone --depth 1 $RepoUrl $cloneDir | Out-Host
+        if ($LASTEXITCODE -eq 0 -and (Test-Path (Join-Path $cloneDir "install.ps1"))) {
+            return [PSCustomObject]@{ Path = $cloneDir; CleanupDir = $cloneDir }
+        }
+        Write-Host "⚠ git clone falló. Intentando descarga directa (ZIP)..." -ForegroundColor Yellow
+        Remove-Item -Recurse -Force $cloneDir -ErrorAction SilentlyContinue
+    } else {
+        Write-Host "→ git no detectado. Usando descarga directa (ZIP, sin git)..." -ForegroundColor Cyan
+    }
+
+    # ── Opción 2: descarga del ZIP desde GitHub (NO requiere git) ────────────
+    try {
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    } catch { }
+
+    $zipPath = Join-Path $env:TEMP ("academic-research-suite-" + [guid]::NewGuid().ToString("N") + ".zip")
+    $extractRoot = Join-Path $env:TEMP ("academic-research-suite-x-" + [guid]::NewGuid().ToString("N"))
+    Write-Host "→ Descargando Academic Research Suite (ZIP)..." -ForegroundColor Cyan
+
+    try {
+        Invoke-WebRequest -Uri $ZipUrl -OutFile $zipPath -UseBasicParsing
+    } catch {
+        Write-Host "Error: no se pudo descargar el repositorio (ZIP)." -ForegroundColor Red
+        Write-Host "  Descarga manual: https://github.com/alexandralacruz/academic-research-suite/archive/refs/heads/main.zip" -ForegroundColor Yellow
+        if (Test-Path $zipPath) { Remove-Item -Force $zipPath -ErrorAction SilentlyContinue }
         return $null
     }
-    git clone --depth 1 $RepoUrl $cloneDir | Out-Host
-    if ($LASTEXITCODE -ne 0 -or -not (Test-Path (Join-Path $cloneDir "install.ps1"))) {
-        Write-Host "Error: no se pudo clonar el repositorio." -ForegroundColor Red
+
+    New-Item -ItemType Directory -Path $extractRoot -Force | Out-Null
+    try {
+        Expand-Archive -Path $zipPath -DestinationPath $extractRoot -Force
+    } catch {
+        Write-Host "Error: no se pudo descomprimir el ZIP." -ForegroundColor Red
+        Write-Host "  Extrae el ZIP manualmente y ejecuta install.ps1 desde la carpeta." -ForegroundColor Red
         return $null
     }
-    return $cloneDir
+    Remove-Item -Force $zipPath -ErrorAction SilentlyContinue
+
+    # El ZIP se extrae en una carpeta "academic-research-suite-main"
+    $suiteDir = Join-Path $extractRoot "academic-research-suite-main"
+    if (-not (Test-Path (Join-Path $suiteDir "install.ps1"))) {
+        $found = Get-ChildItem -Path $extractRoot -Recurse -Filter "install.ps1" -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($found) { $suiteDir = $found.DirectoryName }
+    }
+    if (-not $suiteDir -or -not (Test-Path (Join-Path $suiteDir "install.ps1"))) {
+        Write-Host "Error: no se encontró install.ps1 en el ZIP descargado." -ForegroundColor Red
+        return $null
+    }
+    return [PSCustomObject]@{ Path = $suiteDir; CleanupDir = $extractRoot }
 }
 
 # Si el script se ejecutó "suelto" (descargado sin las carpetas de skills),
 # clonar el repo y re-ejecutar la copia clonada.
 if (-not (Test-LocalRepo $ScriptDir)) {
-    $cloneDir = Get-SuiteClone
-    if (-not $cloneDir) { exit 1 }
-    & (Join-Path $cloneDir "install.ps1") @PSBoundParameters
+    $suite = Get-SuiteSource
+    if (-not $suite) { exit 1 }
+    & (Join-Path $suite.Path "install.ps1") @PSBoundParameters
     $exitCode = $LASTEXITCODE
-    Remove-Item -Recurse -Force $cloneDir -ErrorAction SilentlyContinue
+    Remove-Item -Recurse -Force $suite.CleanupDir -ErrorAction SilentlyContinue
     exit $exitCode
 }
 

@@ -20,7 +20,7 @@ Compatible con cualquier AI coding agent que siga el estándar [Agent Skills](ht
 ### Mac / Linux (terminal)
 
 ```bash
-# One-liner (el repo se clona solo):
+# One-liner — NO requiere git (si no está, descarga el repo como ZIP):
 curl -sSL https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.sh | bash -s -- --all --agent codex
 
 # O clonar e instalar manualmente:
@@ -32,10 +32,23 @@ cd academic-research-suite
 ./install.sh --all --agent all        # Todos los agentes detectados
 ```
 
+### Mac / Linux sin git (descarga manual del ZIP)
+
+```bash
+# 1. Descargá y descomprimí el ZIP:
+curl -sSL -o /tmp/academic-research-suite.zip \
+  https://github.com/alexandralacruz/academic-research-suite/archive/refs/heads/main.zip
+unzip /tmp/academic-research-suite.zip -d /tmp/academic-research-suite
+
+# 2. Entrá a la carpeta y ejecutá:
+cd /tmp/academic-research-suite/academic-research-suite-main
+./install.sh --all --agent codex
+```
+
 ### Windows (PowerShell)
 
 ```powershell
-# One-liner desde PowerShell (el repo se clona solo):
+# One-liner desde PowerShell — NO requiere git (si no está, descarga el repo como ZIP):
 iwr https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.ps1 -OutFile "$env:TEMP\install.ps1"
 powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\install.ps1" -All -Agent codex
 
@@ -48,10 +61,24 @@ cd academic-research-suite
 .\install.ps1 -All -Agent all         # Todos los agentes
 ```
 
+### Windows sin git (descarga manual del ZIP)
+
+Si no tenés git ni querés usar el one-liner, descargá el ZIP y descomprimí:
+
+```powershell
+# 1. Descargá el ZIP en tu navegador (o con este comando):
+#    https://github.com/alexandralacruz/academic-research-suite/archive/refs/heads/main.zip
+
+# 2. Descomprimilo y entrá a la carpeta, luego ejecutá:
+Expand-Archive -Path "$env:USERPROFILE\Downloads\academic-research-suite-main.zip" -DestinationPath "$env:USERPROFILE\Downloads\"
+cd "$env:USERPROFILE\Downloads\academic-research-suite-main"
+.\install.ps1 -All -Agent codex
+```
+
 ### Windows (Git Bash / WSL)
 
 ```bash
-# Usá el mismo one-liner que Mac/Linux:
+# Usá el mismo one-liner que Mac/Linux (no requiere git):
 curl -sSL https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.sh | bash -s -- --all --agent codex
 ```
 
@@ -223,7 +250,7 @@ Las skills se invocan igual en todos los agentes mediante el prefijo `/skill:` s
 ## 🔗 Requisitos y compatibilidad
 
 - Bash (Linux/macOS/WSL) o PowerShell (Windows)
-- `git` (solo para el one-liner, que clona el repo automáticamente) — **no se necesita npm**
+- **`git` NO es necesario**: el one-liner lo usa si está disponible, y si no, descarga el repo como ZIP automáticamente — **no se necesita npm**
 - Cada skill es solo markdown — **sin dependencias externas**
 - Compatible con cualquier AI coding agent que cargue skills desde un directorio:
 

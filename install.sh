@@ -15,7 +15,8 @@
 #   ./install.sh --status         # Ver estado de instalación
 #   ./install.sh --help           # Mostrar ayuda
 #
-# Uso remoto (one-liner desde cualquier máquina):
+# Uso remoto (one-liner desde cualquier máquina).
+# NOTA: NO requiere git — si no está instalado, descarga el repo como ZIP automáticamente:
 #   curl -sSL https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.sh | bash
 #   curl -sSL https://raw... | bash -s -- --all --agent codex
 #   curl -sSL https://raw... | bash -s -- --all --agent all
@@ -40,23 +41,81 @@ _is_local_repo() {
 }
 
 if ! _is_local_repo; then
-    # Ejecución remota (curl | bash): clonar el repo automáticamente
+    # Ejecución remota (curl | bash): descargar el repo automáticamente.
+    # NO requiere git — si no está disponible, descarga el ZIP desde GitHub.
     REPO_URL="${REPO_URL:-https://github.com/alexandralacruz/academic-research-suite.git}"
+    ZIP_URL="${ZIP_URL:-https://codeload.github.com/alexandralacruz/academic-research-suite/zip/refs/heads/main}"
     TMP_DIR="$(mktemp -d /tmp/academic-research-suite.XXXXXX)"
     trap 'rm -rf "$TMP_DIR"' EXIT
 
-    echo "→ Clonando Academic Research Suite..."
+    SUITE_DIR=""
+
+    # ── Opción 1: git clone (si git está disponible) ────────────────────────
     if command -v git &>/dev/null; then
-        git clone --depth 1 "$REPO_URL" "$TMP_DIR" 2>&1 | tail -1
+        echo "→ Descargando Academic Research Suite (git)..."
+        if git clone --depth 1 "$REPO_URL" "$TMP_DIR/repo" >/dev/null 2>&1 \
+            && [ -f "$TMP_DIR/repo/install.sh" ]; then
+            SUITE_DIR="$TMP_DIR/repo"
+        else
+            echo "⚠ git clone falló. Intentando descarga directa (ZIP)..." >&2
+            rm -rf "$TMP_DIR/repo"
+        fi
     else
-        echo "Error: git no encontrado. Instala git o clona el repo manualmente:"
-        echo "  git clone $REPO_URL && cd academic-research-suite && ./install.sh --all --agent codex"
-        exit 1
+        echo "→ git no detectado. Usando descarga directa (ZIP, sin git)..."
     fi
 
-    cd "$TMP_DIR"
+    # ── Opción 2: descarga del ZIP desde GitHub (NO requiere git) ────────────
+    if [ -z "$SUITE_DIR" ]; then
+        ZIP_FILE="$TMP_DIR/suite.zip"
+        SRC_DIR="$TMP_DIR/src"
+        mkdir -p "$SRC_DIR"
+
+        echo "→ Descargando Academic Research Suite (ZIP)..."
+        if command -v curl &>/dev/null; then
+            curl -sSL -o "$ZIP_FILE" "$ZIP_URL"
+        elif command -v wget &>/dev/null; then
+            wget -q -O "$ZIP_FILE" "$ZIP_URL"
+        elif command -v python3 &>/dev/null; then
+            python3 -c "import urllib.request; urllib.request.urlretrieve('$ZIP_URL', '$ZIP_FILE')"
+        else
+            echo "Error: no hay curl, wget ni python3 para descargar el ZIP. Descarga manual:" >&2
+            echo "  https://github.com/alexandralacruz/academic-research-suite/archive/refs/heads/main.zip" >&2
+            exit 1
+        fi
+
+        echo "→ Extrayendo ZIP..."
+        if command -v unzip &>/dev/null; then
+            unzip -q "$ZIP_FILE" -d "$SRC_DIR"
+        elif command -v python3 &>/dev/null; then
+            python3 -m zipfile -e "$ZIP_FILE" "$SRC_DIR"
+        elif command -v tar &>/dev/null; then
+            tar -xf "$ZIP_FILE" -C "$SRC_DIR" 2>/dev/null || {
+                echo "Error: no se pudo extraer el ZIP con tar." >&2
+                exit 1
+            }
+        else
+            echo "Error: no se encontró unzip, python3 ni tar. Extrae el ZIP manualmente:" >&2
+            echo "  https://github.com/alexandralacruz/academic-research-suite/archive/refs/heads/main.zip" >&2
+            exit 1
+        fi
+
+        # El ZIP se extrae en una carpeta "academic-research-suite-main"
+        SUITE_DIR="$SRC_DIR/academic-research-suite-main"
+        if [ ! -f "$SUITE_DIR/install.sh" ]; then
+            local_found="$(find "$SRC_DIR" -name install.sh -type f -print -quit 2>/dev/null)"
+            if [ -n "$local_found" ]; then
+                SUITE_DIR="$(dirname "$local_found")"
+            fi
+        fi
+        if [ -z "$SUITE_DIR" ] || [ ! -f "$SUITE_DIR/install.sh" ]; then
+            echo "Error: no se encontró install.sh en el ZIP descargado." >&2
+            exit 1
+        fi
+    fi
+
+    cd "$SUITE_DIR"
     # Sin exec: compatible con Windows (Git Bash) donde execvp falla
-    "$TMP_DIR/install.sh" "$@"
+    "$SUITE_DIR/install.sh" "$@"
     exit $?
 fi
 
