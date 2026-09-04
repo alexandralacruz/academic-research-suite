@@ -1,333 +1,461 @@
 # Academic Research Suite
 
-> A collection of 16 specialized skills covering the entire scientific research cycle: from literature discovery to pre-submission review.
+### AI-Agent Skills for Academic and Scientific Research
 
-**16 skills · 5 phases · 1 orchestrator · multi-agent**
+**Academic Research Suite (ARS)** is a collection of specialized AI-agent
+skills designed to support the academic research lifecycle — from
+literature discovery and research-gap identification to methodology design,
+scientific writing, reference validation, journal selection, and
+pre-submission review.
 
-Compatible with any AI coding agent that follows the [Agent Skills](https://agentskills.io/specification) standard:
-
-| Agent | Install command | Skills are installed to |
-|-------|----------------|------------------------|
-| [**pi**](https://github.com/badlogic/pi-coding-agent) | `./install.sh --all` | `~/.pi/agent/skills/` |
-| [**Claude Code**](https://docs.anthropic.com/en/docs/claude-code) | `./install.sh --all --agent claude` | `~/.claude/skills/` |
-| [**Codex CLI**](https://github.com/openai/codex) | `./install.sh --all --agent codex` | `~/.codex/skills/` |
-| **Any harness** | `PI_SKILLS_DIR=<path> ./install.sh --all` | The path you specify |
+> **Created and maintained by Alexandra La Cruz**
 
 ---
 
-## 🚀 Quick install
+## Overview
 
-### Mac / Linux (terminal)
+Academic Research Suite provides a structured, multi-stage workflow for
+researchers, educators, students, and academic professionals working with
+AI coding agents.
 
-```bash
-# One-liner — does NOT require git (if missing, it downloads the repo as a ZIP):
-curl -sSL https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.sh | bash -s -- --all --agent codex
+The suite currently includes **16 specialized skills**, organized into
+**five research phases**, with a dedicated **research-manager** acting as
+the central orchestrator.
 
-# Or clone and install manually:
-git clone https://github.com/alexandralacruz/academic-research-suite.git
-cd academic-research-suite
-./install.sh --all                    # pi (default)
-./install.sh --all --agent claude     # Claude Code
-./install.sh --all --agent codex      # Codex CLI
-./install.sh --all --agent all        # All detected agents
+```text
+Academic Research Suite
+│
+├── Phase 1: EXPLORE
+│   ├── literature-discovery
+│   ├── state-of-the-art
+│   └── research-gap
+│
+├── Phase 2: VALIDATE
+│   └── novelty-analysis
+│
+├── Phase 3: DESIGN
+│   ├── methodology-designer
+│   ├── paper-outline
+│   └── title-generator
+│
+├── Phase 4: WRITE
+│   ├── related-work
+│   ├── discussion-writer
+│   ├── conclusion-writer
+│   ├── abstract-writer
+│   └── keywords-generator
+│
+└── Phase 5: POLISH
+    ├── reference-checker
+    ├── journal-selector
+    └── reviewer
+
+research-manager
+└── Orchestrates the complete research workflow
 ```
 
-### Mac / Linux without git (manual ZIP download)
+---
+
+# Research Workflow
+
+ARS is designed to support a research process rather than isolated text
+generation.
+
+### 1. Explore
+
+Discover and organize the scientific literature surrounding a research
+problem.
+
+**Skills:**
+
+- `literature-discovery` — Searches and maps relevant literature.
+- `state-of-the-art` — Synthesizes the current state of research.
+- `research-gap` — Identifies potential research gaps.
+
+### 2. Validate
+
+Evaluate whether a proposed research idea provides meaningful novelty.
+
+**Skill:**
+
+- `novelty-analysis` — Evaluates the novelty and contribution of a research
+  idea.
+
+### 3. Design
+
+Transform a research idea into a structured research and publication plan.
+
+**Skills:**
+
+- `methodology-designer` — Designs research methodologies and experiments.
+- `paper-outline` — Structures academic manuscripts.
+- `title-generator` — Generates and evaluates research titles.
+
+### 4. Write
+
+Support the construction of the main components of an academic paper.
+
+**Skills:**
+
+- `related-work` — Develops the related-work section.
+- `discussion-writer` — Supports interpretation and discussion of results.
+- `conclusion-writer` — Develops conclusions and future research directions.
+- `abstract-writer` — Generates abstracts using different academic styles.
+- `keywords-generator` — Generates keywords for academic discoverability.
+
+### 5. Polish
+
+Perform quality-control and pre-submission activities.
+
+**Skills:**
+
+- `reference-checker` — Checks references, citations, DOI information, and
+  consistency.
+- `journal-selector` — Supports journal selection based on scope and
+  bibliometric information.
+- `reviewer` — Performs a structured pre-submission manuscript review.
+
+### Orchestration
+
+- `research-manager` — Coordinates the complete research workflow and helps
+  determine which skills should be used at each stage.
+
+---
+
+# Supported AI Coding Agents
+
+Academic Research Suite follows the
+[Agent Skills](https://agentskills.io/) approach and can be installed for
+multiple AI coding agents.
+
+| Agent | Installation |
+|---|---|
+| Pi | `./install.sh --all` |
+| Claude Code | `./install.sh --all --agent claude` |
+| Codex CLI | `./install.sh --all --agent codex` |
+
+The installer can also target a custom skills directory.
+
+---
+
+# Quick Installation
+
+## macOS / Linux
+
+Clone the repository:
 
 ```bash
-# 1. Download and extract the ZIP:
-curl -sSL -o /tmp/academic-research-suite.zip \
-  https://github.com/alexandralacruz/academic-research-suite/archive/refs/heads/main.zip
-unzip /tmp/academic-research-suite.zip -d /tmp/academic-research-suite
+git clone https://github.com/alexandralacruz/academic-research-suite.git
+cd academic-research-suite
+```
 
-# 2. Enter the folder and run:
-cd /tmp/academic-research-suite/academic-research-suite-main
+Install all skills:
+
+```bash
+./install.sh --all
+```
+
+Install for Claude Code:
+
+```bash
+./install.sh --all --agent claude
+```
+
+Install for Codex CLI:
+
+```bash
 ./install.sh --all --agent codex
 ```
 
-### Windows (PowerShell)
+Install for all detected agents:
 
-```powershell
-# One-liner from PowerShell — does NOT require git (if missing, it downloads the repo as a ZIP):
-iwr https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.ps1 -OutFile "$env:TEMP\install.ps1"
-powershell -NoProfile -ExecutionPolicy Bypass -File "$env:TEMP\install.ps1" -All -Agent codex
-
-# Or clone and install manually:
-git clone https://github.com/alexandralacruz/academic-research-suite.git
-cd academic-research-suite
-.\install.ps1 -All -Agent codex       # Codex CLI
-.\install.ps1 -All -Agent claude      # Claude Code
-.\install.ps1 -All                    # pi
-.\install.ps1 -All -Agent all         # All agents
+```bash
+./install.sh --all --agent all
 ```
 
-### Windows without git (manual ZIP download)
+---
 
-If you don't have git or don't want to use the one-liner, download the ZIP and extract it:
+## Windows
+
+Using PowerShell:
 
 ```powershell
-# 1. Download the ZIP in your browser (or with this command):
-#    https://github.com/alexandralacruz/academic-research-suite/archive/refs/heads/main.zip
+git clone https://github.com/alexandralacruz/academic-research-suite.git
+cd academic-research-suite
+.\install.ps1 -All
+```
 
-# 2. Extract it, enter the folder, then run:
-Expand-Archive -Path "$env:USERPROFILE\Downloads\academic-research-suite-main.zip" -DestinationPath "$env:USERPROFILE\Downloads\"
-cd "$env:USERPROFILE\Downloads\academic-research-suite-main"
+For Claude Code:
+
+```powershell
+.\install.ps1 -All -Agent claude
+```
+
+For Codex CLI:
+
+```powershell
 .\install.ps1 -All -Agent codex
 ```
 
-### Windows (Git Bash / WSL)
+---
 
-```bash
-# Use the same one-liner as Mac/Linux (no git required):
-curl -sSL https://raw.githubusercontent.com/alexandralacruz/academic-research-suite/main/install.sh | bash -s -- --all --agent codex
+# Installation Commands
+
+```text
+./install.sh
 ```
 
-### Installation options
+Interactive installation.
 
-| Command | Description |
-|---------|-------------|
-| `./install.sh` | Interactive menu (pick skills one by one) |
-| `./install.sh --all` | Install all 16 skills into pi |
-| `./install.sh --all --agent <agent>` | Install into claude, codex, or all |
-| `./install.sh <name>` | Install a specific skill |
-| `./install.sh --list` | List all available skills |
-| `./install.sh --status` | Show installation status |
-| `./install.sh --uninstall <name>` | Uninstall a skill |
-| `./install.sh --uninstall --all` | Uninstall everything |
-| `./install.sh --help` | Show all agents and options |
+```text
+./install.sh --all
+```
 
-> **💡 Windows (PowerShell):** same options with `.\install.ps1`, using a single dash in the parameters: `-All`, `-Agent <agent>`, `-Skill <name>`, `-List`, `-Status`, `-Uninstall <name>`, `-UninstallAll`, `-Help`.
+Install all 16 skills.
 
-### Custom destination (any harness)
+```text
+./install.sh --list
+```
 
-```bash
-# Install into a local project (pi)
-PI_SKILLS_DIR=.pi/skills ./install.sh --all
+List available skills.
 
-# Install into a specific harness with a custom path
-PI_SKILLS_DIR=~/.my-agent/skills ./install.sh --all
+```text
+./install.sh --status
+```
 
-# Share skills between agents with symlinks
-ln -s ~/.pi/agent/skills ~/.claude/skills
+Display installation status.
+
+```text
+./install.sh <skill-name>
+```
+
+Install a specific skill.
+
+```text
+./install.sh --uninstall <skill-name>
+```
+
+Uninstall a specific skill.
+
+```text
+./install.sh --uninstall --all
+```
+
+Uninstall all installed skills.
+
+```text
+./install.sh --help
+```
+
+Display available options.
+
+---
+
+# Examples
+
+### Literature review
+
+```text
+Use the literature-discovery skill to identify recent research
+on AI-assisted academic writing.
+```
+
+### Research gap
+
+```text
+Use the research-gap skill to identify potential research gaps
+in AI-based medical image analysis.
+```
+
+### Novelty analysis
+
+```text
+Use the novelty-analysis skill to evaluate whether this research
+idea provides a sufficiently original contribution.
+```
+
+### Methodology
+
+```text
+Use the methodology-designer skill to design an experimental
+methodology for comparing three deep learning models.
+```
+
+### Manuscript review
+
+```text
+Use the reviewer skill to perform a pre-submission peer review
+of this manuscript.
+```
+
+### Complete workflow
+
+```text
+Use research-manager to guide the complete research process
+from research question to pre-submission review.
 ```
 
 ---
 
-## 🧭 Architecture
+# Design Philosophy
 
-```
-Academic Research Suite
-        │
-        ├── Phase 1: EXPLORE ──────────────────────
-        │   ├── literature-discovery      ← Searches and maps literature
-        │   ├── state-of-the-art          ← Synthesizes papers into a narrative
-        │   └── research-gap              ← Identifies research gaps
-        │
-        ├── Phase 2: VALIDATE ─────────────────────
-        │   └── novelty-analysis          ← Evaluates the real novelty of an idea
-        │
-        ├── Phase 3: DESIGN ───────────────────────
-        │   ├── methodology-designer      ← Designs experiments and methods
-        │   ├── paper-outline             ← Generates the paper outline
-        │   └── title-generator           ← Proposes and evaluates titles
-        │
-        ├── Phase 4: WRITE ────────────────────────
-        │   ├── related-work              ← Writes the related work section
-        │   ├── discussion-writer         ← Interpretive discussion of results
-        │   ├── conclusion-writer         ← Conclusion with actionable future work
-        │   ├── abstract-writer           ← Multi-style abstract (IEEE, ACM, Nature...)
-        │   └── keywords-generator        ← Keywords optimized for discoverability
-        │
-        └── Phase 5: POLISH ───────────────────────
-            ├── reference-checker         ← Validates references (orphans, format, DOI)
-            ├── journal-selector          ← Recommends journals (quartile, IF, scope fit)
-            └── reviewer                  ← Full pre-submission review
+Academic Research Suite is designed around several principles:
 
-research-manager  ← Orchestrator that guides the full flow
-```
+### Research before writing
+
+The system prioritizes understanding the scientific landscape before
+generating manuscript content.
+
+### Evidence over unsupported claims
+
+Research-related outputs should be grounded in identifiable scientific
+evidence whenever external sources are available.
+
+### Human oversight
+
+ARS is intended to assist researchers, not replace academic judgment,
+scientific expertise, peer review, or institutional research processes.
+
+### Reproducibility
+
+The workflows encourage explicit research questions, methodological
+decisions, evidence tracking, citation checking, and transparent revision.
+
+### Responsible use of AI
+
+Researchers remain responsible for verifying generated information,
+citations, interpretations, methodological decisions, and final
+manuscript content.
 
 ---
 
-## 🎯 Available skills
+# Academic and Scientific Use
 
-### 🔍 Exploration
+Academic Research Suite is intended to support:
 
-| Skill | What it does | When to use it |
-|-------|--------------|----------------|
-| `literature-discovery` | Discovers literature, groups it by line of work, detects trends, identifies authors/datasets/tools | When starting a project |
-| `state-of-the-art` | Synthesizes papers into a narrative: approaches, strengths, weaknesses, evolution | Writing the background section |
-| `research-gap` | Identifies open problems, missing datasets, uncompared methods, unexplored domains | Defining a thesis/paper direction |
+- Scientific research
+- Academic writing
+- Literature reviews
+- Systematic research workflows
+- Research methodology design
+- Research gap identification
+- Scientific manuscript preparation
+- Peer-review preparation
+- Teaching and learning
+- Research reproducibility
+- Non-commercial experimentation
 
-### ✅ Validation
+Researchers are encouraged to disclose the use of AI-assisted tools when
+required by their institution, publisher, conference, journal, or research
+ethics policies.
 
-| Skill | What it does | When to use it |
-|-------|--------------|----------------|
-| `novelty-analysis` | Evaluates real novelty, compares with prior work, positions the contribution | Before committing to a direction |
-
-### 🏗️ Design
-
-| Skill | What it does | When to use it |
-|-------|--------------|----------------|
-| `methodology-designer` | Designs experiments, formalizes the problem, selects baselines and metrics, plans ablations | Writing the method section |
-| `paper-outline` | Generates an IMRaD outline with a page budget, planned figures, narrative flow | Planning the paper before writing |
-| `title-generator` | Proposes titles in IEEE/ACM/Nature styles, evaluates novelty, impact, discoverability | Choosing the final title |
-
-### ✍️ Writing
-
-| Skill | What it does | When to use it |
-|-------|--------------|----------------|
-| `related-work` | Writes the related work section, grouping papers thematically and differentiating the contribution | Drafting the paper's related work |
-| `discussion-writer` | Interprets results, explains findings, acknowledges limitations, extracts implications | Writing the discussion |
-| `conclusion-writer` | Summarizes contributions, proposes actionable (not generic) future work, closes strongly | Finalizing the paper |
-| `abstract-writer` | Generates IEEE, ACM, Nature, Springer, structured, graphical, and plain-language abstracts | Preparing the abstract for the venue |
-| `keywords-generator` | Generates keywords optimized for indexing, reviewer matching, and discoverability | Completing the paper's metadata |
-
-### 🔧 Polishing
-
-| Skill | What it does | When to use it |
-|-------|--------------|----------------|
-| `reference-checker` | Validates citations: orphans, format, DOI, missing citations, self-citations, recency | Before submitting |
-| `journal-selector` | Recommends journals by scope, quartile, IF, APC, review times, submission strategy | Choosing where to publish |
-| `reviewer` | Full pre-submission review: novelty, clarity, rigor, validity, reproducibility, figures, references | Last step before submitting |
-
-### 🎛️ Orchestrator
-
-| Skill | What it does | When to use it |
-|-------|--------------|----------------|
-| `research-manager` | Orchestrates skills into workflows, tracks progress, recommends next steps | Managing a complete project |
+Use of ARS does not replace human responsibility for the accuracy,
+originality, integrity, and ethical compliance of academic work.
 
 ---
 
-## 📖 Usage
+# License
 
-Skills are invoked the same way in all agents using the `/skill:` prefix followed by the name:
+**Academic Research Suite is NOT released under the MIT License.**
 
-```bash
-# 1. Load the orchestrator to start a guided project
-/skill:research-manager
+ARS is distributed under the:
 
-# 2. Or invoke skills directly by phase
-/skill:literature-discovery
-/skill:research-gap
-/skill:title-generator
-/skill:reviewer
+**Academic Research Suite – Non-Commercial Academic License (ARS-NC 1.0)**
 
-# 3. The manager will tell you which skill to run next
-```
+The license permits free use, modification, and redistribution for
+personal, educational, academic, scientific, and other non-commercial
+purposes.
 
-> **💡 Tip:** On some agents the exact command may vary slightly (e.g. `@skill:` or a mention). Check your harness documentation. The `SKILL.md` content is the same — the agent reads it as system instructions.
+### Commercial use is not permitted.
 
-### Full workflow example
+Without prior written authorization from Alexandra La Cruz, users may not:
 
-```bash
-# Phase 1: Explore
-/skill:literature-discovery     # → Research landscape with open problems
-/skill:research-gap             # → Gaps prioritized by impact/feasibility
+- sell Academic Research Suite;
+- sell substantial portions or modified versions of the suite;
+- incorporate substantial portions into commercial products;
+- incorporate substantial portions into paid applications or SaaS
+  platforms;
+- offer substantially derived functionality as a paid service;
+- sublicense the suite for commercial purposes; or
+- otherwise commercially exploit the project.
 
-# Phase 2: Validate
-/skill:novelty-analysis         # → Is my idea actually novel?
-
-# Phase 3: Design
-/skill:methodology-designer     # → Experimental protocol, baselines, metrics
-/skill:paper-outline            # → Paper outline with a page budget
-/skill:title-generator          # → Ranked candidate titles
-
-# Phase 4: Write
-/skill:related-work             # → Related work section
-/skill:discussion-writer        # → Interpretive discussion
-/skill:conclusion-writer        # → Conclusion with concrete future work
-/skill:abstract-writer          # → Multi-style abstract
-/skill:keywords-generator       # → Optimized keywords
-
-# Phase 5: Polish
-/skill:reference-checker        # → Reference validation
-/skill:journal-selector         # → Where to submit (quartile, IF, times, APC)
-/skill:reviewer                 # → Full pre-submission review
-```
+See [`LICENSE`](LICENSE) for the complete terms.
 
 ---
 
-## 🔗 Requirements and compatibility
+# Attribution
 
-- Bash (Linux/macOS/WSL) or PowerShell (Windows)
-- **`git` is NOT required**: the one-liner uses it if available, and otherwise downloads the repo as a ZIP automatically — **npm is not needed**
-- Each skill is just markdown — **no external dependencies**
-- Compatible with any AI coding agent that loads skills from a directory:
+If you use Academic Research Suite in academic or scientific work, please
+attribute the project to:
 
-| Agent | Skills dir | Tested? |
-|-------|-----------|---------|
-| [pi](https://github.com/badlogic/pi-coding-agent) | `~/.pi/agent/skills/` | ✅ |
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | `~/.claude/skills/` | ✅ |
-| [Codex CLI](https://github.com/openai/codex) | `~/.codex/skills/` | ✅ |
-| [Aider](https://aider.chat/) | `~/.aider/skills/` | ⚡ |
-| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | `~/.gemini/skills/` | ⚡ |
-| Any Agent Skills harness | Configurable via `PI_SKILLS_DIR` | ⚡ |
+**Alexandra La Cruz**
 
-> ✅ Tested · ⚡ Compatible with the [Agent Skills spec](https://agentskills.io/specification)
+Suggested attribution:
+
+> Academic Research Suite — Alexandra La Cruz (2026)
+
+For formal citation, see [`CITATION.cff`](CITATION.cff).
 
 ---
 
-## 📁 Repository structure
+# Copyright
 
-```
-academic-research-suite/
-├── README.md
-├── LICENSE
-├── install.sh                      ← Multi-agent installer
-├── install.ps1                     ← Windows (PowerShell) installer
-├── .claude-plugin/
-│   ├── plugin.json                 ← Claude Code marketplace
-│   └── marketplace.json
-├── literature-discovery/
-│   └── SKILL.md
-├── state-of-the-art/
-│   └── SKILL.md
-├── research-gap/
-│   └── SKILL.md
-├── novelty-analysis/
-│   └── SKILL.md
-├── title-generator/
-│   └── SKILL.md
-├── abstract-writer/
-│   └── SKILL.md
-├── keywords-generator/
-│   └── SKILL.md
-├── paper-outline/
-│   └── SKILL.md
-├── methodology-designer/
-│   └── SKILL.md
-├── related-work/
-│   └── SKILL.md
-├── discussion-writer/
-│   └── SKILL.md
-├── conclusion-writer/
-│   └── SKILL.md
-├── journal-selector/
-│   └── SKILL.md
-├── reviewer/
-│   └── SKILL.md
-├── reference-checker/
-│   └── SKILL.md
-└── research-manager/
-    └── SKILL.md
-```
+Copyright © 2026 Alexandra La Cruz.
 
-Each `SKILL.md` follows the [Agent Skills standard](https://agentskills.io/specification) with YAML frontmatter (`name`, `description`) and markdown content with detailed instructions, output formats, quality criteria, and integration with other skills.
-
-> **💡 The magic:** You only need the skill folder and its `SKILL.md`. No dependencies, no scripts, no extra configuration. Copy it to any agent's `skills/` folder and it works.
+All rights not expressly granted under the ARS-NC 1.0 license are reserved.
 
 ---
 
-## 🤝 Contributing
+# Author
 
-1. Fork the repository
-2. Create a new skill: `mkdir my-skill && vim my-skill/SKILL.md`
-3. Follow the frontmatter format from the [Agent Skills spec](https://agentskills.io/specification)
-4. Document inputs, outputs, and integrations with other skills
-5. PR
+**Alexandra La Cruz**
+
+Academic Research Suite is an independently developed research-oriented
+AI-agent framework intended to facilitate academic research, scientific
+writing, experimentation, and reproducible research workflows.
 
 ---
 
-## 📄 License
+# Disclaimer
 
-MIT
+Academic Research Suite is provided for research and educational purposes.
+
+The generated outputs may contain errors, omissions, unsupported claims,
+incorrect references, or other inaccuracies. Users are responsible for
+independently verifying outputs before using them in academic,
+professional, scientific, clinical, or other consequential contexts.
+
+The use of this software does not constitute endorsement of any generated
+content.
+
+---
+
+# Contributing
+
+Contributions, suggestions, and academic feedback are welcome.
+
+Any contribution should respect the project's non-commercial licensing
+model and preserve appropriate attribution to the original work.
+
+Before submitting substantial contributions, please review the project's
+license and contribution guidelines.
+
+---
+
+# Citation
+
+If Academic Research Suite contributes to your research, please cite it
+using the project's `CITATION.cff` file.
+
+Recommended citation:
+
+**La Cruz, Alexandra. (2026). Academic Research Suite.**
+https://github.com/alexandralacruz/academic-research-suite
+
+---
+
+**Academic Research Suite**
+
+*AI-agent skills for academic and scientific research.*
+
+Created and maintained by **Alexandra La Cruz**.
